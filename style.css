@@ -648,3 +648,42 @@ main {
   background: #2196ff;
 
 }
+.search-header {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  margin-top: 30px;
+
+  margin-bottom: 20px;
+
+}
+
+.close-btn {
+
+  width: 42px;
+
+  height: 42px;
+
+  border: 1px solid #26354e;
+
+  border-radius: 8px;
+
+  background: #111827;
+
+  color: white;
+
+  font-size: 20px;
+
+  cursor: pointer;
+
+}
+
+.close-btn:hover {
+
+  background: #1677d2;
+
+}
