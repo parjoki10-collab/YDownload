@@ -1031,7 +1031,29 @@ document
     }
 
   );
+document
 
+  .getElementById("closeSearch")
+
+  .addEventListener("click", () => {
+
+    searchPage.classList.add("hidden");
+
+    detailPage.classList.add("hidden");
+
+    homePage.classList.remove("hidden");
+
+    document.getElementById("searchInput").value = "";
+
+    window.scrollTo({
+
+      top: 0,
+
+      behavior: "smooth"
+
+    });
+
+  });
 /* =========================
 
    START
