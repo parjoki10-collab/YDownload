@@ -1,4 +1,4 @@
-const API_KEY = "MASUKKAN_API_KEY_TMDB_KAMU";
+const API_KEY = "c107fdc3c6ce730867033ed4d867a1fc";
 
 const API = "https://api.themoviedb.org/3";
 
