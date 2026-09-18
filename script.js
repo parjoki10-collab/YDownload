@@ -1,10 +1,12 @@
-const API_KEY = "c107fdc3c6ce730867033ed4d867a1fc";
+const API_KEY = "MASUKKAN_API_KEY_TMDB_KAMU";
 
 const API = "https://api.themoviedb.org/3";
 
 const POSTER = "https://image.tmdb.org/t/p/w500";
 
 const BACKDROP = "https://image.tmdb.org/t/p/original";
+
+const DOWNLOAD_BASE = "http://a.111477.xyz";
 
 const homePage = document.getElementById("homePage");
 
@@ -37,6 +39,56 @@ async function api(url) {
   }
 
   return response.json();
+
+}
+
+/* =========================
+
+   DOWNLOAD URL
+
+========================= */
+
+function makeMovieDownloadUrl(data) {
+
+  const title = data.title || "";
+
+  const year = data.release_date
+
+    ? data.release_date.substring(0, 4)
+
+    : "";
+
+  /*
+
+    TMDB:
+
+    Batman: Bad Blood
+
+    Folder:
+
+    Batman - Bad Blood (2016)
+
+  */
+
+  const folderTitle = title
+
+    .replace(/:/g, " -")
+
+    .replace(/\s+-\s+/g, " - ")
+
+    .trim();
+
+  const folderName = `${folderTitle} (${year})`;
+
+  return `${DOWNLOAD_BASE}/movies/${encodeURIComponent(folderName)}/`;
+
+}
+
+function makeTVDownloadUrl(data, seasonNumber) {
+
+  const title = data.name || "";
+
+  return `${DOWNLOAD_BASE}/tvs/${encodeURIComponent(title)}/Season%20${seasonNumber}/`;
 
 }
 
@@ -130,7 +182,13 @@ function renderMovies(items, elementId, type) {
 
     const title = item.title || item.name;
 
-    const date = item.release_date || item.first_air_date || "";
+    const date =
+
+      item.release_date ||
+
+      item.first_air_date ||
+
+      "";
 
     const year = date
 
@@ -248,11 +306,13 @@ function renderDetail(data, type) {
 
   const title = data.title || data.name;
 
-  const date = data.release_date ||
+  const date =
 
-               data.first_air_date ||
+    data.release_date ||
 
-               "";
+    data.first_air_date ||
+
+    "";
 
   const year = date
 
@@ -266,9 +326,13 @@ function renderDetail(data, type) {
 
     .join(", ") || "N/A";
 
-  const cast = data.credits?.cast?.slice(0, 8) || [];
+  const cast =
 
-  const reviews = data.reviews?.results?.slice(0, 3) || [];
+    data.credits?.cast?.slice(0, 8) || [];
+
+  const reviews =
+
+    data.reviews?.results?.slice(0, 3) || [];
 
   let html = `
 
@@ -338,9 +402,55 @@ function renderDetail(data, type) {
 
           </p>
 
+          <!-- DOWNLOAD -->
+
+          <div class="download-box">
+
+            <a
+
+              id="downloadButton"
+
+              href="${
+
+                type === "movie"
+
+                ? makeMovieDownloadUrl(data)
+
+                : makeTVDownloadUrl(
+
+                    data,
+
+                    data.seasons?.find(
+
+                      s => s.season_number > 0
+
+                    )?.season_number || 1
+
+                  )
+
+              }"
+
+              target="_blank"
+
+              rel="noopener"
+
+              class="download-btn"
+
+            >
+
+              ⬇️ Download
+
+            </a>
+
+          </div>
+
   `;
 
-  /* CAST */
+  /* =========================
+
+     CAST
+
+  ========================= */
 
   if (cast.length) {
 
@@ -394,9 +504,21 @@ function renderDetail(data, type) {
 
   }
 
-  /* TV SEASON */
+  /* =========================
+
+     TV SEASONS
+
+  ========================= */
 
   if (type === "tv" && data.seasons) {
+
+    const validSeasons =
+
+      data.seasons.filter(
+
+        season => season.season_number > 0
+
+      );
 
     html += `
 
@@ -416,9 +538,7 @@ function renderDetail(data, type) {
 
     `;
 
-    data.seasons.forEach(season => {
-
-      if (season.season_number === 0) return;
+    validSeasons.forEach(season => {
 
       html += `
 
@@ -436,7 +556,13 @@ function renderDetail(data, type) {
 
         </select>
 
-        <div id="episodes" class="episodes"></div>
+        <div
+
+          id="episodes"
+
+          class="episodes"
+
+        ></div>
 
       </div>
 
@@ -444,7 +570,11 @@ function renderDetail(data, type) {
 
   }
 
-  /* REVIEWS */
+  /* =========================
+
+     REVIEWS
+
+  ========================= */
 
   if (reviews.length) {
 
@@ -508,13 +638,73 @@ function renderDetail(data, type) {
 
   document.getElementById("detailContent").innerHTML = html;
 
-  /* LOAD FIRST SEASON */
+  /* =========================
 
-  if (type === "tv" && data.seasons?.length) {
+     TV SEASON EVENTS
 
-    const select = document.getElementById("seasonSelect");
+  ========================= */
 
-    select.addEventListener("change", () => {
+  if (type === "tv" && data.seasons) {
+
+    const select =
+
+      document.getElementById("seasonSelect");
+
+    const downloadButton =
+
+      document.getElementById("downloadButton");
+
+    if (select) {
+
+      select.addEventListener(
+
+        "change",
+
+        () => {
+
+          const seasonNumber =
+
+            select.value;
+
+          /*
+
+            Update Download URL
+
+          */
+
+          downloadButton.href =
+
+            makeTVDownloadUrl(
+
+              data,
+
+              seasonNumber
+
+            );
+
+          /*
+
+            Load episodes
+
+          */
+
+          loadEpisodes(
+
+            data.id,
+
+            seasonNumber
+
+          );
+
+        }
+
+      );
+
+      /*
+
+        Load default season
+
+      */
 
       loadEpisodes(
 
@@ -524,15 +714,7 @@ function renderDetail(data, type) {
 
       );
 
-    });
-
-    loadEpisodes(
-
-      data.id,
-
-      select.value
-
-    );
+    }
 
   }
 
@@ -558,11 +740,15 @@ async function loadEpisodes(tvId, season) {
 
       document.getElementById("episodes");
 
+    if (!container) return;
+
     container.innerHTML = "";
 
     data.episodes.forEach(ep => {
 
-      const div = document.createElement("div");
+      const div =
+
+        document.createElement("div");
 
       div.className = "episode";
 
@@ -582,7 +768,11 @@ async function loadEpisodes(tvId, season) {
 
         <small>
 
-          ⭐ ${ep.vote_average?.toFixed(1) || "N/A"}
+          ⭐ ${
+
+            ep.vote_average?.toFixed(1) || "N/A"
+
+          }
 
         </small>
 
@@ -610,7 +800,13 @@ async function searchMovies() {
 
   const query =
 
-    document.getElementById("searchInput").value.trim();
+    document
+
+      .getElementById("searchInput")
+
+      .value
+
+      .trim();
 
   if (!query) return;
 
@@ -624,7 +820,11 @@ async function searchMovies() {
 
     searchPage.classList.remove("hidden");
 
-    document.getElementById("searchTitle").textContent =
+    document.getElementById(
+
+      "searchTitle"
+
+    ).textContent =
 
       `Search: ${query}`;
 
@@ -688,7 +888,21 @@ async function searchMovies() {
 
 }
 
-function renderSingleSearchCard(item, type, container) {
+/* =========================
+
+   SEARCH CARD
+
+========================= */
+
+function renderSingleSearchCard(
+
+  item,
+
+  type,
+
+  container
+
+) {
 
   const title =
 
@@ -704,7 +918,11 @@ function renderSingleSearchCard(item, type, container) {
 
   const year =
 
-    date ? date.substring(0, 4) : "N/A";
+    date
+
+    ? date.substring(0, 4)
+
+    : "N/A";
 
   const card =
 
@@ -730,7 +948,11 @@ function renderSingleSearchCard(item, type, container) {
 
       <div class="rating">
 
-        ⭐ ${item.vote_average?.toFixed(1) || "N/A"}
+        ⭐ ${
+
+          item.vote_average?.toFixed(1) || "N/A"
+
+        }
 
       </div>
 
@@ -744,7 +966,15 @@ function renderSingleSearchCard(item, type, container) {
 
     <div class="card-info">
 
-      ${year} • ${type === "tv" ? "TV Series" : "Movie"}
+      ${year} • ${
+
+        type === "tv"
+
+        ? "TV Series"
+
+        : "Movie"
+
+      }
 
     </div>
 
@@ -752,7 +982,13 @@ function renderSingleSearchCard(item, type, container) {
 
   card.onclick = () =>
 
-    openDetail(item.id, type);
+    openDetail(
+
+      item.id,
+
+      type
+
+    );
 
   container.appendChild(card);
 
@@ -760,7 +996,7 @@ function renderSingleSearchCard(item, type, container) {
 
 /* =========================
 
-   SEARCH EVENTS
+   SEARCH BUTTON
 
 ========================= */
 
