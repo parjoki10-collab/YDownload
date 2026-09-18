@@ -687,18 +687,3 @@ main {
   background: #1677d2;
 
 }
-
-
-/* WATCH / PLAYER */
-.episode-watch {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 12px;
-  background: #1677d2;
-  color: #fff;
-  text-decoration: none;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
-}
