@@ -8,37 +8,6 @@ const BACKDROP = "https://image.tmdb.org/t/p/original";
 
 const DOWNLOAD_BASE = "http://a.111477.xyz";
 
-/*
-  AUTHORIZED MEDIA URLS
-  Add only direct media URLs that you own or are authorized to stream.
-
-  Examples:
-  "movie:12345": "https://your-server.example/video.mp4",
-  "tv:1399:s1:e1": "https://your-server.example/s01e01.mp4"
-
-  If an entry is missing, the Watch button will show a message instead
-  of attempting to guess a file URL from a directory listing.
-*/
-const MEDIA_URLS = {
-  // "movie:12345": "https://your-server.example/video.mp4",
-  // "tv:1399:s1:e1": "https://your-server.example/s01e01.mp4"
-};
-
-function getMediaUrl(type, data, seasonNumber = null, episodeNumber = null) {
-  if (type === "movie") {
-    return MEDIA_URLS[`movie:${data.id}`] || "";
-  }
-  if (seasonNumber !== null && episodeNumber !== null) {
-    return MEDIA_URLS[`tv:${data.id}:s${seasonNumber}:e${episodeNumber}`] || "";
-  }
-  return "";
-}
-
-function makeWatchUrl(title, mediaUrl) {
-  if (!mediaUrl) return "";
-  return `watch.html?title=${encodeURIComponent(title)}&file=${encodeURIComponent(mediaUrl)}`;
-}
-
 const homePage = document.getElementById("homePage");
 
 const searchPage = document.getElementById("searchPage");
@@ -433,23 +402,43 @@ function renderDetail(data, type) {
 
           </p>
 
-          <!-- WATCH -->
+          <!-- DOWNLOAD -->
 
           <div class="download-box">
 
             <a
 
-              id="watchButton"
+              id="downloadButton"
 
-              href="${makeWatchUrl(title, getMediaUrl(type, data)) || "#"}"
+              href="${
+
+                type === "movie"
+
+                ? makeMovieDownloadUrl(data)
+
+                : makeTVDownloadUrl(
+
+                    data,
+
+                    data.seasons?.find(
+
+                      s => s.season_number > 0
+
+                    )?.season_number || 1
+
+                  )
+
+              }"
+
+              target="_blank"
+
+              rel="noopener"
 
               class="download-btn"
 
-              ${!getMediaUrl(type, data) ? 'aria-disabled="true"' : ""}
-
             >
 
-              ▶️ Watch
+              ⬇️ Download
 
             </a>
 
@@ -661,9 +650,9 @@ function renderDetail(data, type) {
 
       document.getElementById("seasonSelect");
 
-    const watchButton =
+    const downloadButton =
 
-      document.getElementById("watchButton");
+      document.getElementById("downloadButton");
 
     if (select) {
 
@@ -679,28 +668,19 @@ function renderDetail(data, type) {
 
           /*
 
-            Keep Watch button generic. Episode-level media URLs
-            can be configured in MEDIA_URLS.
+            Update Download URL
+
           */
 
-          if (watchButton) {
-            const mediaUrl = getMediaUrl(
-              "tv",
+          downloadButton.href =
+
+            makeTVDownloadUrl(
+
               data,
-              Number(seasonNumber),
-              1
-            );
 
-            watchButton.href = makeWatchUrl(
-              data.name || "",
-              mediaUrl
-            ) || "#";
+              seasonNumber
 
-            watchButton.setAttribute(
-              "aria-disabled",
-              mediaUrl ? "false" : "true"
             );
-          }
 
           /*
 
@@ -772,13 +752,6 @@ async function loadEpisodes(tvId, season) {
 
       div.className = "episode";
 
-      const mediaUrl = getMediaUrl(
-        "tv",
-        { id: tvId },
-        Number(season),
-        Number(ep.episode_number)
-      );
-
       div.innerHTML = `
 
         <strong>
@@ -802,17 +775,6 @@ async function loadEpisodes(tvId, season) {
           }
 
         </small>
-
-        <br><br>
-
-        ${
-          mediaUrl
-            ? `<a class="episode-watch"
-                 href="${makeWatchUrl(ep.name, mediaUrl)}">
-                 ▶ Watch
-               </a>`
-            : ""
-        }
 
       `;
 
