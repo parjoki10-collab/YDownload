@@ -1,216 +1,48 @@
 <!DOCTYPE html>
-
 <html lang="id">
-
 <head>
-
   <meta charset="UTF-8">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <meta name="theme-color" content="#080b12">
+  <meta name="description" content="MSTFLIX — Movie & TV Library">
   <title>MSTFLIX — Movie & TV Library</title>
-
   <link rel="stylesheet" href="style.css">
-
-
-  <style id="mstflix-launch-ui">
-    /* Launch UI additions — existing style.css remains the primary stylesheet */
-    .genre-bar {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding: 14px 0 4px;
-      scrollbar-width: none;
-    }
-    .genre-bar::-webkit-scrollbar { display: none; }
-    .genre-chip {
-      flex: 0 0 auto;
-      border: 1px solid rgba(70, 140, 220, .28);
-      background: #111827;
-      color: #b8c0ce;
-      border-radius: 999px;
-      padding: 9px 15px;
-      font: inherit;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .genre-chip.active {
-      background: #1976d2;
-      color: #fff;
-      border-color: #1976d2;
-    }
-
-    .featured-section { margin-top: 18px; }
-    .featured-card {
-      position: relative;
-      min-height: 205px;
-      border-radius: 18px;
-      overflow: hidden;
-      background: #111827;
-      border: 1px solid rgba(255,255,255,.06);
-    }
-    .featured-backdrop {
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(90deg, rgba(5,8,15,.98) 0%, rgba(5,8,15,.76) 42%, rgba(5,8,15,.12) 100%),
-        linear-gradient(0deg, rgba(5,8,15,.82), transparent 60%);
-      background-size: cover;
-      background-position: center;
-    }
-    .featured-content {
-      position: relative;
-      z-index: 1;
-      min-height: 205px;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      max-width: 72%;
-    }
-    .featured-kicker {
-      color: #7db9ff;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      margin-bottom: 7px;
-    }
-    .featured-title {
-      margin: 0 0 7px;
-      font-size: clamp(22px, 6vw, 34px);
-      line-height: 1.05;
-    }
-    .featured-meta {
-      color: #c0c7d2;
-      font-size: 13px;
-      margin-bottom: 13px;
-    }
-    .featured-btn {
-      width: fit-content;
-      border: 0;
-      border-radius: 9px;
-      padding: 10px 16px;
-      background: #1976d2;
-      color: #fff;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .section-title { align-items: center; }
-    .section-title .see-all {
-      color: #78b7ff;
-      font-size: 13px;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-
-    .launch-section { margin-top: 28px; }
-    .empty-state {
-      text-align: center;
-      color: #929aaa;
-      padding: 28px 12px;
-    }
-
-    .bottom-nav {
-      display: none;
-    }
-
-    .site-footer {
-      margin: 44px -0px 76px;
-      padding: 28px 0 0;
-      border-top: 1px solid rgba(255,255,255,.08);
-      text-align: center;
-      color: #7f8795;
-      font-size: 12px;
-    }
-    .site-footer .footer-logo {
-      color: #f4f6f8;
-      font-size: 18px;
-      font-weight: 800;
-      margin-bottom: 7px;
-    }
-    .site-footer .footer-logo span { color: #1976d2; }
-
-    @media (max-width: 700px) {
-      .featured-content { max-width: 88%; padding: 20px; }
-      .featured-card, .featured-content { min-height: 190px; }
-      .bottom-nav {
-        position: fixed;
-        z-index: 50;
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        left: 12px;
-        right: 12px;
-        bottom: 10px;
-        padding: 7px;
-        border: 1px solid rgba(255,255,255,.08);
-        border-radius: 16px;
-        background: rgba(10,14,23,.94);
-        backdrop-filter: blur(14px);
-        box-shadow: 0 8px 30px rgba(0,0,0,.35);
-      }
-      .bottom-nav button {
-        border: 0;
-        background: transparent;
-        color: #8e97a8;
-        padding: 8px 4px;
-        font: inherit;
-        font-size: 11px;
-        cursor: pointer;
-      }
-      .bottom-nav button.active { color: #fff; }
-      .bottom-nav .nav-icon {
-        display: block;
-        font-size: 17px;
-        line-height: 1;
-        margin-bottom: 3px;
-      }
-    }
-  </style>
-
 </head>
 
 <body>
-
   <header class="header">
-
     <div class="logo">MST<span>FLIX</span></div>
 
     <div class="search-box">
-
       <input
-
         type="text"
-
         id="searchInput"
-
         placeholder="Search movies & TV series..."
-
+        autocomplete="off"
+        aria-label="Search movies and TV series"
       >
-
-      <button id="searchBtn">🔍</button>
-
+      <button id="searchBtn" type="button" aria-label="Search">⌕</button>
     </div>
-
   </header>
 
   <main>
-
+    <!-- HOME -->
     <section id="homePage">
 
-      <section class="launch-section" aria-label="Genres">
+      <!-- GENRES -->
+      <section class="genre-section" aria-label="Browse by genre">
         <div class="genre-bar" id="genreBar">
-          <button class="genre-chip active" data-genre="all">All</button>
-          <button class="genre-chip" data-genre="action">Action</button>
-          <button class="genre-chip" data-genre="comedy">Comedy</button>
-          <button class="genre-chip" data-genre="horror">Horror</button>
-          <button class="genre-chip" data-genre="scifi">Sci-Fi</button>
-          <button class="genre-chip" data-genre="animation">Animation</button>
-          <button class="genre-chip" data-genre="drama">Drama</button>
+          <button class="genre-chip active" type="button" data-genre="all">All</button>
+          <button class="genre-chip" type="button" data-genre="action">Action</button>
+          <button class="genre-chip" type="button" data-genre="comedy">Comedy</button>
+          <button class="genre-chip" type="button" data-genre="horror">Horror</button>
+          <button class="genre-chip" type="button" data-genre="scifi">Sci-Fi</button>
+          <button class="genre-chip" type="button" data-genre="animation">Animation</button>
+          <button class="genre-chip" type="button" data-genre="drama">Drama</button>
         </div>
       </section>
 
+      <!-- FEATURED -->
       <section class="featured-section" aria-label="Featured">
         <div class="featured-card" id="featuredCard">
           <div class="featured-backdrop" id="featuredBackdrop"></div>
@@ -223,48 +55,38 @@
         </div>
       </section>
 
-
+      <!-- TRENDING -->
       <div class="section">
-
         <div class="section-title">
-
-          <h2>Trending Movies</h2><a href="#" class="see-all" data-see-all="trendingMovies">See All ›</a>
-
+          <h2>Trending Movies</h2>
+          <button class="see-all" type="button" data-see-all="trendingMovies">See All ›</button>
         </div>
-
         <div id="trendingMovies" class="movie-grid"></div>
-
       </div>
 
+      <!-- POPULAR MOVIES -->
       <div class="section">
-
         <div class="section-title">
-
-          <h2>Popular Movies</h2><a href="#" class="see-all" data-see-all="popularMovies">See All ›</a>
-
+          <h2>Popular Movies</h2>
+          <button class="see-all" type="button" data-see-all="popularMovies">See All ›</button>
         </div>
-
         <div id="popularMovies" class="movie-grid"></div>
-
       </div>
 
+      <!-- POPULAR TV -->
       <div class="section">
-
         <div class="section-title">
-
-          <h2>Popular TV Series</h2><a href="#" class="see-all" data-see-all="popularTV">See All ›</a>
-
+          <h2>Popular TV Series</h2>
+          <button class="see-all" type="button" data-see-all="popularTV">See All ›</button>
         </div>
-
         <div id="popularTV" class="movie-grid"></div>
-
       </div>
 
-
+      <!-- POPULAR THIS WEEK -->
       <div class="section">
         <div class="section-title">
           <h2>Popular This Week</h2>
-          <a href="#" class="see-all" data-see-all="popularWeek">See All ›</a>
+          <button class="see-all" type="button" data-see-all="popularWeek">See All ›</button>
         </div>
         <div id="popularWeek" class="movie-grid"></div>
       </div>
@@ -272,35 +94,19 @@
     </section>
 
     <!-- SEARCH -->
-
- <section id="searchPage" class="hidden">
-
-  <div class="search-header">
-
-    <h2 id="searchTitle">Search Result</h2>
-
-    <button id="closeSearch" class="close-btn">
-
-      ✕
-
-    </button>
-
-  </div>
-
-  <div id="searchResults" class="movie-grid"></div>
-
-</section>
-
-    <!-- DETAIL -->
-
-    <section id="detailPage" class="hidden">
-
-      <div id="detailContent"></div>
-
+    <section id="searchPage" class="hidden">
+      <div class="search-header">
+        <h2 id="searchTitle">Search Result</h2>
+        <button id="closeSearch" class="close-btn" type="button" aria-label="Close search">✕</button>
+      </div>
+      <div id="searchResults" class="movie-grid"></div>
     </section>
 
+    <!-- DETAIL -->
+    <section id="detailPage" class="hidden">
+      <div id="detailContent"></div>
+    </section>
   </main>
-
 
   <footer class="site-footer">
     <div class="footer-logo">MST<span>FLIX</span></div>
@@ -308,84 +114,33 @@
     <div>© 2026 MSTFLIX</div>
   </footer>
 
+  <!-- MOBILE NAV -->
   <nav class="bottom-nav" aria-label="Mobile navigation">
     <button class="active" type="button" data-nav="home">
-      <span class="nav-icon">⌂</span>Home
+      <span class="nav-icon">⌂</span>
+      <span>Home</span>
     </button>
     <button type="button" data-nav="movies">
-      <span class="nav-icon">▣</span>Movies
+      <span class="nav-icon">▣</span>
+      <span>Movies</span>
     </button>
     <button type="button" data-nav="tv">
-      <span class="nav-icon">▤</span>TV Series
+      <span class="nav-icon">▤</span>
+      <span>TV Series</span>
     </button>
     <button type="button" data-nav="search">
-      <span class="nav-icon">⌕</span>Search
+      <span class="nav-icon">⌕</span>
+      <span>Search</span>
     </button>
   </nav>
 
   <div id="loading" class="loading hidden">
-
-    Loading...
-
+    <div class="loading-box">
+      <div class="spinner"></div>
+      <span>Loading...</span>
+    </div>
   </div>
 
   <script src="script.js"></script>
-
-
-  <script>
-    // MSTFLIX launch UI — safe progressive enhancement around the existing script.js.
-    document.addEventListener('DOMContentLoaded', () => {
-      const searchInput = document.getElementById('searchInput');
-      const searchBtn = document.getElementById('searchBtn');
-      const searchPage = document.getElementById('searchPage');
-      const homePage = document.getElementById('homePage');
-
-      document.querySelectorAll('.genre-chip').forEach(btn => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('.genre-chip').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          // Genre filtering is intentionally left to script.js/API logic.
-          // This UI state is ready for wiring to the existing TMDB request layer.
-        });
-      });
-
-      document.querySelectorAll('[data-see-all]').forEach(link => {
-        link.addEventListener('click', (e) => {
-          e.preventDefault();
-          const target = document.getElementById(link.dataset.seeAll);
-          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
-      });
-
-      document.querySelectorAll('[data-nav]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('[data-nav]').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-
-          if (btn.dataset.nav === 'home') {
-            homePage?.classList.remove('hidden');
-            searchPage?.classList.add('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }
-
-          if (btn.dataset.nav === 'search') {
-            searchInput?.focus();
-            searchPage?.classList.remove('hidden');
-            homePage?.classList.add('hidden');
-          }
-
-          if (btn.dataset.nav === 'movies') {
-            document.getElementById('trendingMovies')?.scrollIntoView({ behavior: 'smooth' });
-          }
-
-          if (btn.dataset.nav === 'tv') {
-            document.getElementById('popularTV')?.scrollIntoView({ behavior: 'smooth' });
-          }
-        });
-      });
-    });
-  </script>
-
 </body>
-
 </html>
